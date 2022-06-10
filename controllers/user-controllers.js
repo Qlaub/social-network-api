@@ -48,6 +48,26 @@ const userController = {
       .catch(err => res.status(400).json(err));
   },
 
+  // post new friend to user's friend list
+  addFriend({ params }, res) {
+    User.findOneAndUpdate(
+      { _id: params.userId },
+      { $push: { friends: params.friendId } },
+      { new: true }
+    )
+    .then(dbUserData => {
+      if (!dbUserData) {
+        res.status(400).json({ message: 'No user found with this id. '});
+        return;
+      }
+      return dbUserData;
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+  }
+
   // put update user by _id
   updateUser({ params, body }, res) {
     User.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
@@ -72,7 +92,9 @@ const userController = {
         res.json(dbUserData);
       })
       .catch(err => res.status(400).json(err));
-  }
+  },
+
+  // delete a friend from user's friend list
 };
 
 module.exports = userController;
