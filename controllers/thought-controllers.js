@@ -51,6 +51,21 @@ const thoughtController = {
   },
 
   // post create reaction to thought
+  createReaction({ params, body }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.id },
+      { $push: { reactions: body } },
+      { new: true }
+    )
+    .then(dbThoughtData => {
+      if (!dbThoughtData) {
+        res.status(400).json({ message: 'No thought found with this id.' });
+        return;
+      }
+      res.json(dbThoughtData);
+    })
+    .catch(err => res.json(err));
+  },
 
   // put update thought by _id
   updateThoughtById({ params, body }, res) {
