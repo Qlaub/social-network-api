@@ -39,9 +39,14 @@ const userController = {
         console.log(err);
         res.status(400).json(err);
       });
-  }
+  },
 
   // post new user
+  createUser({ body }, res) {
+    User.create(body)
+      .then(dbUserData => res.json(dbUserData))
+      .catch(err => res.status(400).json(err));
+  }
 
   // put update user by _id
 
