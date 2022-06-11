@@ -1,3 +1,4 @@
+const router = require('express').Router();
 const { 
   getAllThoughts, 
   getThoughtById, 
@@ -7,8 +8,6 @@ const {
   deleteThought,
   deleteReaction
 } = require('../../controllers/thought-controllers');
-
-const router = require('express').Router();
 
 router.route('/')
   .get(getAllThoughts)
