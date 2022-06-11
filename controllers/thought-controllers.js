@@ -15,7 +15,7 @@ const thoughtController = {
 
   // get a single by _id
   getThoughtById({ params }, res) {
-    Thought.findOneAndUpdate({ _id: params.id })
+    Thought.findOne({ _id: params.id })
       .select('-__v')
       .then(dbThoughtData => {
         if (!dbThoughtData) {
@@ -32,13 +32,13 @@ const thoughtController = {
 
   // post new thought
   createThought({ body }, res) {
-    Thought.create(body)
+    Thought.create({ thoughtText: body.thoughtText, username: body.username })
       .then(({ _id }) => {
         return User.findOneAndUpdate(
           { _id: body.userId },
           { $push: { thoughts: _id } },
           { new: true }
-        );
+        ).select('-__v');
       })
       .then(dbUserData => {
         if (!dbUserData) {
@@ -57,6 +57,7 @@ const thoughtController = {
       { $push: { reactions: body } },
       { new: true }
     )
+    .select('-__v')
     .then(dbThoughtData => {
       if (!dbThoughtData) {
         res.status(400).json({ message: 'No thought found with this id.' });
@@ -71,9 +72,10 @@ const thoughtController = {
   updateThoughtById({ params, body }, res) {
     Thought.findOneAndUpdate(
       { _id: params.id },
-      { reactionBody: body.text },
+      { thoughtText: body.thoughtText },
       { new: true }
     )
+    .select('-__v')
     .then(dbThoughtData => {
       if (!dbThoughtData) {
         res.status(400).json({ message: 'No thought found with this id.' });
@@ -99,7 +101,7 @@ const thoughtController = {
           { _id: params.userId },
           { $pull: { thoughts: params.thoughtId } },
           { new: true }
-        );
+        ).select('-__v');
       })
       .then(dbUserData => {
         if (!dbUserData) {
@@ -118,6 +120,7 @@ const thoughtController = {
       { $pull: { reactions: { reactionId: params.reactionId } } },
       { new: true }
     )
+    .select('-__v')
     .then(dbThoughtData => {
       if (!dbThoughtData) {
         res.status(400).json({ message: 'Incorrect thought or reaction id' });
